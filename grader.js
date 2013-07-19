@@ -56,36 +56,23 @@ var restFunction = function(result, response) {
          }
     };
 
-var url2file = function(myurl){
-    
- rest.get('http://nameless-island-2656.herokuapp.com').on('complete', function(result) {
+var url2file = function(program){
+  
+ rest.get(program.url).on('complete', function(result) {
+
   if (result instanceof Error) {
     sys.puts('Error: ' + result.message);
     this.retry(5000); // try again after 5 sec
   } else {
-    sys.puts(result);
+     fs.writeFileSync("url_file.html", result);
+      var checkJson = checkHtmlFile('url_file.html', program.checks);
+    var outJson = JSON.stringify(checkJson, null, 4);
+    console.log(outJson);
+
+
+
   }
 });
-
-/*console.log(myurl);
-    rest.get('http://www.google.com').on('complete', restFunction);
-
-
-
-
-
-
-
-
-      rest.get("http://www.google.com").on('complete', function(result) {
-      if (result instanceof Error) {
-	  sys.puts('Error: ' + result.message);
-	  this.retry(5000); // try again after 5 sec
-      } else {
-	  fs.writeFileSync("url_file.html", result); 
-      }
-  }); */
-  //return "url_file.html"; 
 };
 
 var checkHtmlFile = function(htmlfile, checksfile) {
@@ -111,10 +98,8 @@ if(require.main == module) {
         //.option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
         .option('-u, --url <url_file>', 'URL to index.html', null, HTMLFILE_DEFAULT)
         .parse(process.argv);
-    var getFile = url2file(program.url);
-    var checkJson = checkHtmlFile(getFile, program.checks);
-    var outJson = JSON.stringify(checkJson, null, 4);
-    console.log(outJson);
+    var getFile = url2file(program);
+    
 } else {
     exports.checkHtmlFile = checkHtmlFile;
 }
